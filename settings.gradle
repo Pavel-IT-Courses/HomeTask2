@@ -1,2 +1,2 @@
-include ':app'
+include ':app', ':c7_broadcastreceiver', ':c8_service'
 rootProject.name='Home Task 2'
