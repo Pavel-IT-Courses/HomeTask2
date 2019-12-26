@@ -20,7 +20,7 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="com.gmail.pavkascool.action3" />
-                <action android:name="com.gmail.pavkascool.action4" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
             </intent-filter>
         </receiver>
 

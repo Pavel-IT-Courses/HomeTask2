@@ -11,9 +11,9 @@ import android.widget.Toast;
 public class MainActivity extends AppCompatActivity {
 
     public final static String ACTION1 = "com.gmail.pavkascool.action1";
-    public final static String ACTION2 = "com.gmail.pavkascool.action2";
+    public final static String ACTION2 = "android.intent.action.TIME_TICK";
     public final static String ACTION3 = "com.gmail.pavkascool.action3";
-    public final static String ACTION4 = "com.gmail.pavkascool.action4";
+    public final static String ACTION4 = "android.intent.action.TIMEZONE_CHANGED";
 
     private ContextReceiver contextReceiver = new ContextReceiver();
 
@@ -31,17 +31,17 @@ public class MainActivity extends AppCompatActivity {
         sendBroadcast(new Intent(ACTION1));
     }
 
-    public void action2(View view) {
-        sendBroadcast(new Intent(ACTION2));
-    }
+//    public void action2(View view) {
+//        sendBroadcast(new Intent(ACTION2));
+//    }
 
     public void action3(View view) {
         sendBroadcast(new Intent(ACTION3));
     }
 
-    public void action4(View view) {
-        sendBroadcast(new Intent(ACTION4));
-    }
+//    public void action4(View view) {
+//        sendBroadcast(new Intent(ACTION4));
+//    }
 
     public void unregister(View view) {
         try {
