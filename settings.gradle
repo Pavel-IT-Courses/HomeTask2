@@ -1,2 +1,2 @@
-include ':app', ':c7_broadcastreceiver', ':c8_service', ':hw6_service_and_receiver'
+include ':app', ':c7_broadcastreceiver', ':c8_service', ':hw6_service_and_receiver', ':c9_async'
 rootProject.name='Home Task 2'
