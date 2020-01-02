@@ -27,7 +27,7 @@
             android:layout_height="wrap_content"
             android:padding="16dp"
             android:text="@string/action2"
-            android:onClick="action2"/>
+            />
 
         <Button
             android:layout_width="wrap_content"
@@ -41,7 +41,7 @@
             android:layout_height="wrap_content"
             android:padding="16dp"
             android:text="@string/action4"
-            android:onClick="action4"/>
+            />
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
