@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Weather Locator</string>
+    <string name="save">Save This Location</string>
+</resources>

@@ -5,7 +5,7 @@ android {
 
 
     defaultConfig {
-        applicationId "com.gmail.pavkascool.hw6_service_and_receiver"
+        applicationId "com.gmail.pavkascool.h7_weather"
         minSdkVersion 21
         targetSdkVersion 28
         versionCode 1
@@ -33,4 +33,5 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
+    implementation 'androidx.recyclerview:recyclerview:1.1.0'
 }

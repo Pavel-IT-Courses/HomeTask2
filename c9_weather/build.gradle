@@ -5,7 +5,7 @@ android {
 
 
     defaultConfig {
-        applicationId "com.gmail.pavkascool.hw6_service_and_receiver"
+        applicationId "com.gmail.pavkascool.c9_weather"
         minSdkVersion 21
         targetSdkVersion 28
         versionCode 1
@@ -13,6 +13,7 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
+    //buildConfigField "String", "API_KEY", "\"da89ad0f2cb19fb309267dddfb2ac0a9\""
 
     buildTypes {
         release {
