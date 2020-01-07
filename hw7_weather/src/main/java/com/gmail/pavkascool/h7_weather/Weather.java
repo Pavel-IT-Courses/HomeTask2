@@ -3,12 +3,31 @@ package com.gmail.pavkascool.h7_weather;
 import android.graphics.Bitmap;
 import android.widget.ImageView;
 
+import com.squareup.picasso.Picasso;
+
 public class Weather {
-    private String location, temp, desc;
+    private String location, temp, desc, iconCode, time;
     private Bitmap weatherImage;
+    IconHolder iconHolder = IconHolder.getInstance();
+
+    public void setTime(String time) {
+        this.time = time;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public String getIconCode() {
+        return iconCode;
+    }
+
+    public void setIconCode(String iconCode) {
+        this.iconCode = iconCode;
+    }
 
     public String getTime() {
-        return "";
+        return time;
     }
 
     public Weather(String location) {

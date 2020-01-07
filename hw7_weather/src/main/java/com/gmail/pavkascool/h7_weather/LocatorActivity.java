@@ -40,6 +40,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class LocatorActivity extends AppCompatActivity implements View.OnClickListener{
 
@@ -48,7 +49,7 @@ public class LocatorActivity extends AppCompatActivity implements View.OnClickLi
     private ImageButton search;
     private Button save;
     private EditText city;
-    private TextView time, temp, desc;
+    private TextView town, time, temp, desc;
     private ImageView weatherImage;
     private IconHolder iconHolder;
 
@@ -77,11 +78,31 @@ public class LocatorActivity extends AppCompatActivity implements View.OnClickLi
         recyclerView = findViewById(R.id.recycler);
         search = findViewById(R.id.search);
         save = findViewById(R.id.save);
+        town = findViewById(R.id.town);
         city = findViewById(R.id.city);
         time = findViewById(R.id.time);
         temp = findViewById(R.id.temp);
         desc = findViewById(R.id.desc);
         weatherImage = findViewById(R.id.weather);
+
+        Log.d(TAG, "ON CREATE, IconHolder size is " + iconHolder.size());
+        Log.d(TAG, "ON CREATE, weathers size is " + weathers.size());
+
+        if(!weathers.isEmpty()) {
+            Weather current = weathers.get(0);
+            town.setText(current.getLocation().toUpperCase());
+            time.setText(current.getTime());
+            temp.setText(current.getTemp());
+            desc.setText(current.getDesc());
+            if(iconHolder.get(current.getIconCode()) != null) {
+                weatherImage.setImageBitmap(iconHolder.get(current.getIconCode()));
+                Log.d(TAG, "ICON Already Exists");
+            }
+            else {
+                Picasso.with(this).load("http://openweathermap.org/img/wn/" + current.getIconCode() + "@2x.png").into(weatherImage);
+                Log.d(TAG, "ICON Is To Be Loaded");
+            }
+        }
 
         search.setOnClickListener(this);
         save.setOnClickListener(this);
@@ -93,6 +114,8 @@ public class LocatorActivity extends AppCompatActivity implements View.OnClickLi
         recyclerView.setAdapter(weatherAdapter);
 
     }
+
+
 
     @Override
     public Object onRetainCustomNonConfigurationInstance() {
@@ -111,16 +134,23 @@ public class LocatorActivity extends AppCompatActivity implements View.OnClickLi
         @Override
         public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
             WeatherViewHolder weatherViewHolder = (WeatherViewHolder)holder;
-            Weather w = weathers.get(position);
+            Weather w = weathers.get(position + 1);
             weatherViewHolder.time.setText(w.getTime());
             weatherViewHolder.temp.setText(w.getTemp());
             weatherViewHolder.desc.setText(w.getDesc());
-            weatherViewHolder.weath.setImageBitmap(w.getWeatherImage());
+            String iconCode = w.getIconCode();
+            if(iconHolder.containsKey(iconCode)) {
+                weatherViewHolder.weath.setImageBitmap(iconHolder.get(iconCode));
+            }
+            else {
+                Picasso.with(LocatorActivity.this).load("http://openweathermap.org/img/wn/" + iconCode + "@2x.png")
+                        .into(weatherViewHolder.weath);
+            }
         }
 
         @Override
         public int getItemCount() {
-            return weathers.size();
+            return weathers.size() - 1;
         }
     }
 
@@ -143,6 +173,7 @@ public class LocatorActivity extends AppCompatActivity implements View.OnClickLi
         String loc = city.getText().toString();
 
         if(v.getId() == R.id.search) {
+            weathers = new ArrayList<Weather>();
             try {
                 searchWeatherForLocation(loc);
                 searchForecastForLocation(loc);
@@ -150,10 +181,21 @@ public class LocatorActivity extends AppCompatActivity implements View.OnClickLi
                 e.printStackTrace();
             }
         }
-        else saveLocation(loc);
+        else {
+            saveLocation(loc);
+            finish();
+        }
     }
 
     private void searchWeatherForLocation(final String location) throws IOException {
+
+        Date date = new Date();
+        final String t = "Time: " + new SimpleDateFormat("dd.MM HH.mm", new Locale("ru", "BY")).format(date);
+        Log.d(TAG, "Current Time is " + t);
+
+        final Weather currentWeather = new Weather(location);
+        currentWeather.setTime(t);
+        Log.d(TAG, "Set Time is " + currentWeather.getTime());
 
         String address = String.format(BASE_URL, location, ID);
         Log.d(TAG, address);
@@ -174,50 +216,80 @@ public class LocatorActivity extends AppCompatActivity implements View.OnClickLi
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-//                String answer = response.body().string();
-//
-//                Date date = new Date();
-//                final String t = "Time: " + new SimpleDateFormat("dd.MM HH.mm").format(date);
-//
-//                try {
-//                    JSONObject object = new JSONObject(answer);
-//
-//                    JSONArray weatherArray = object.getJSONArray("weather");
-//                    final String description = weatherArray.getJSONObject(0).getString("description");
-//
-//                    String icon = weatherArray.getJSONObject(0).getString("icon");
-//                    final String iconUrl = "http://openweathermap.org/img/wn/" + icon + "@2x.png";
-//
-//                    JSONObject main = object.getJSONObject("main");
-//                    final Double temperature = main.getDouble("temp");
-//
-//
-//
-//                    LocatorActivity.this.runOnUiThread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            desc.setText(description);
-//
-//                            String temper = "t = " + Math.round(temperature - 273.15) + " C";
-//                            temp.setText(temper);
-//
-//                            time.setText(t);
-//
-//                            Picasso.with(LocatorActivity.this).load(iconUrl).into(weatherImage);
-//                        }
-//                    });
-//
-//                } catch (JSONException e) {
-//                    LocatorActivity.this.runOnUiThread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            Toast.makeText(LocatorActivity.this, "Wrong Request or Response", Toast.LENGTH_SHORT).show();
-//                        }
-//                    });
-//
-//                }
 
-                createWeather(location, 0);
+                final String answer = response.body().string();
+
+
+                try {
+                    JSONObject object = new JSONObject(answer);
+
+                    JSONArray weatherArray = object.getJSONArray("weather");
+                    final String description = weatherArray.getJSONObject(0).getString("description");
+                    currentWeather.setDesc(description);
+
+                    final String iconCode = weatherArray.getJSONObject(0).getString("icon");
+                    final String iconUrl = "http://openweathermap.org/img/wn/" + iconCode + "@2x.png";
+                    currentWeather.setIconCode(iconCode);
+
+                    JSONObject main = object.getJSONObject("main");
+                    double temperature = main.getDouble("temp");
+                    final String temper = "t = " + Math.round(temperature - 273.15) + " C";
+                    currentWeather.setTemp(temper);
+
+
+
+                    LocatorActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            town.setText(location.toUpperCase());
+
+                            desc.setText(description);
+
+                            temp.setText(temper);
+
+                            time.setText(t);
+
+
+                            if (!iconHolder.containsKey(iconCode)) {
+                                Log.d(TAG, iconHolder.size() + " and doesn't contain this icon");
+                                Picasso.with(LocatorActivity.this).load(iconUrl).into(weatherImage);
+                                Log.d(TAG, "Finished loading to UI and array size of weathers is " + weathers.size());
+                                Picasso.with(LocatorActivity.this).load(iconUrl).into(new Target() {
+                                    @Override
+                                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                                        iconHolder.put(iconCode, bitmap);
+                                        Log.d(TAG, iconHolder.size() + " updated");
+                                    }
+
+                                    @Override
+                                    public void onBitmapFailed(Drawable errorDrawable) {
+                                        Log.d(TAG, iconHolder.size() + " not updated");
+                                    }
+
+                                    @Override
+                                    public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+                                    }
+                                });
+                            }
+                            else {
+                                weatherImage.setImageBitmap(iconHolder.get(iconCode));
+                                Log.d(TAG, iconHolder.size() + " and CONTAINS this icon");
+                            }
+                        }
+                    });
+
+                } catch (JSONException e) {
+                    LocatorActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(LocatorActivity.this, "Wrong Request or Response", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+                }
+
+                weathers.add(currentWeather);
             }
         });
     }
@@ -234,7 +306,7 @@ public class LocatorActivity extends AppCompatActivity implements View.OnClickLi
                 String answer = response.body().string();
 
                 Date date = new Date();
-                final String t = "Time: " + new SimpleDateFormat("dd.MM HH.mm").format(date);
+                final String t = "Time: " + new SimpleDateFormat("dd.MM HH.mm", new Locale("ru", "BY")).format(date);
 
                 try {
                     JSONObject object = new JSONObject(answer);
@@ -243,7 +315,20 @@ public class LocatorActivity extends AppCompatActivity implements View.OnClickLi
                         Weather w = new Weather(location);
                         JSONObject main = list.getJSONObject(i).getJSONObject("main");
                         String temper = main.getString("temp");
-                        w.setTemp(temper);
+                        double d = Double.parseDouble(temper);
+                        String tt = "t = " + Math.round(d - 273.15) + " C";
+                        w.setTemp(tt);
+                        JSONArray wthrs = list.getJSONObject(i).getJSONArray("weather");
+                        String s = wthrs.getJSONObject(0).getString("description");
+                        w.setDesc(s);
+                        String iCode = wthrs.getJSONObject(0).getString("icon");
+                        w.setIconCode(iCode);
+
+                        long dt = list.getJSONObject(i).getLong("dt") * 1000;
+                        Date arrayDate = new Date(dt);
+                        String aDate = new SimpleDateFormat("dd.MM HH.mm", new Locale("ru", "BY")).format(arrayDate);
+                        w.setTime(aDate);
+
                         weathers.add(w);
                     }
 

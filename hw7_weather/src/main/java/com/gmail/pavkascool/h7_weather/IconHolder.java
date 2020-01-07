@@ -8,7 +8,7 @@ import java.util.LinkedHashMap;
 
 
 public class IconHolder extends LinkedHashMap<String, Bitmap> {
-    private final static int LENGTH = 8;
+    private final static int LENGTH = 16;
 
     private static IconHolder iconHolder;
     public static IconHolder getInstance() {
