@@ -1,6 +1,7 @@
 package com.gmail.pavkascool.h7_weather;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -172,6 +173,9 @@ public class LocatorActivity extends AppCompatActivity implements View.OnClickLi
         }
         else if(v.getId() == R.id.save) {
             saveLocation(loc);
+            Intent intent = new Intent();
+            intent.putExtra("location", loc);
+            setResult(RESULT_OK, intent);
             finish();
         }
         else {
