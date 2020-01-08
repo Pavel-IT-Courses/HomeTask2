@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
@@ -24,6 +25,7 @@ public class BaseActivity extends AppCompatActivity implements View.OnClickListe
     private LocAdapter locAdapter;
     private List<String> locations;
     private static int REQ_CODE = 1;
+    private WeatherDataBase db = WeatherApplication.getInstance().getDatabase();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,31 +79,58 @@ public class BaseActivity extends AppCompatActivity implements View.OnClickListe
             super(itemView);
             local = itemView.findViewById(R.id.local);
             remove = itemView.findViewById(R.id.remove);
-            local.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Toast.makeText(BaseActivity.this, "Field", Toast.LENGTH_SHORT);
-                }
-            });
-            remove.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Toast.makeText(BaseActivity.this, "Button", Toast.LENGTH_SHORT);
-                }
-            });
+            local.setOnClickListener(BaseActivity.this);
+            remove.setOnClickListener(BaseActivity.this);
+
         }
     }
 
     @Override
     public void onClick(View v) {
+
         Intent intent = new Intent(this, LocatorActivity.class);
-        startActivityForResult(intent, REQ_CODE);
+        if(v.getId() == R.id.add) {
+
+            startActivityForResult(intent, 1);
+        }
+        else {
+            int pos = recyclerView.getChildLayoutPosition((LinearLayout)(v.getParent()));
+            if(v instanceof Button) {
+                Toast.makeText(BaseActivity.this, "Button " + pos, Toast.LENGTH_SHORT).show();
+                locations.remove(pos);
+                locAdapter.notifyDataSetChanged();
+
+            }
+            else {
+                Toast.makeText(BaseActivity.this, "Field " + pos, Toast.LENGTH_SHORT).show();
+                String loc = ((TextView)v).getText().toString();
+                intent.putExtra("location", loc);
+                startActivityForResult(intent, 2);
+
+            }
+        }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if(data != null && resultCode == RESULT_OK) {
             String loc = data.getStringExtra("location").toUpperCase();
+            for(String s: locations) {
+                if(s.equals(loc)) {
+                    Toast.makeText(BaseActivity.this, "The Location is already in the list", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            }
+            final Locations newLocation = new Locations();
+            newLocation.setLocation(loc);
+            final LocationDao dao = db.locationDao();
+            Thread t = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    dao.insert(newLocation);
+                }
+            });
+            t.run();
             locations.add(loc);
             locAdapter.notifyDataSetChanged();
         }

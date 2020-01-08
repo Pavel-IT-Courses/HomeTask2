@@ -22,4 +22,7 @@ public interface LocationDao {
 
     @Query("SELECT * FROM locations")
     List<Locations> getAll();
+
+    @Query("SELECT * FROM locations WHERE location = :loc")
+    List<Locations> get(String loc);
 }

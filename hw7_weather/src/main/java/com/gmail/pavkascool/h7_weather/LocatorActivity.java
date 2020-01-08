@@ -103,6 +103,18 @@ public class LocatorActivity extends AppCompatActivity implements View.OnClickLi
         weatherAdapter = new WeatherAdapter();
         recyclerView.setAdapter(weatherAdapter);
 
+        Intent intent = getIntent();
+        String s = intent.getStringExtra("location");
+        if(s != null) {
+            city.setText(s);
+            try {
+                searchWeatherForLocation(s);
+                searchForecastForLocation(s);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
     }
 
 
@@ -172,13 +184,15 @@ public class LocatorActivity extends AppCompatActivity implements View.OnClickLi
             }
         }
         else if(v.getId() == R.id.save) {
-            saveLocation(loc);
+            //saveLocation(loc);
             Intent intent = new Intent();
             intent.putExtra("location", loc);
             setResult(RESULT_OK, intent);
             finish();
         }
         else {
+            Intent intent = new Intent();
+            setResult(RESULT_CANCELED, intent);
             finish();
         }
     }
