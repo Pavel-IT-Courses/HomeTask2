@@ -2,4 +2,6 @@
     <string name="app_name">Weather Locator</string>
     <string name="save">Save This Location</string>
     <string name="add">Add New Location</string>
+    <string name="back">Get Back Without Saving</string>
+    <string name="remove">Remove</string>
 </resources>

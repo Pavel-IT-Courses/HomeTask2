@@ -1,35 +1,23 @@
 package com.gmail.pavkascool.h7_weather;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
-import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
-
+import android.widget.*;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
-
+import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -47,7 +35,7 @@ public class LocatorActivity extends AppCompatActivity implements View.OnClickLi
     private RecyclerView recyclerView;
     private WeatherAdapter weatherAdapter;
     private ImageButton search;
-    private Button save;
+    private Button save, back;
     private EditText city;
     private TextView town, time, temp, desc;
     private ImageView weatherImage;
@@ -78,6 +66,7 @@ public class LocatorActivity extends AppCompatActivity implements View.OnClickLi
         recyclerView = findViewById(R.id.recycler);
         search = findViewById(R.id.search);
         save = findViewById(R.id.save);
+        back = findViewById(R.id.back);
         town = findViewById(R.id.town);
         city = findViewById(R.id.city);
         time = findViewById(R.id.time);
@@ -106,6 +95,7 @@ public class LocatorActivity extends AppCompatActivity implements View.OnClickLi
 
         search.setOnClickListener(this);
         save.setOnClickListener(this);
+        back.setOnClickListener(this);
 
         int cols = getResources().getConfiguration().orientation;
         GridLayoutManager manager = new GridLayoutManager(this, cols);
@@ -181,8 +171,14 @@ public class LocatorActivity extends AppCompatActivity implements View.OnClickLi
                 e.printStackTrace();
             }
         }
-        else {
+        else if(v.getId() == R.id.save) {
             saveLocation(loc);
+            Intent intent = new Intent();
+            intent.putExtra("location", loc);
+            setResult(RESULT_OK, intent);
+            finish();
+        }
+        else {
             finish();
         }
     }
