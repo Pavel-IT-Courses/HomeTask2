@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -76,6 +77,18 @@ public class BaseActivity extends AppCompatActivity implements View.OnClickListe
             super(itemView);
             local = itemView.findViewById(R.id.local);
             remove = itemView.findViewById(R.id.remove);
+            local.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(BaseActivity.this, "Field", Toast.LENGTH_SHORT);
+                }
+            });
+            remove.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(BaseActivity.this, "Button", Toast.LENGTH_SHORT);
+                }
+            });
         }
     }
 
