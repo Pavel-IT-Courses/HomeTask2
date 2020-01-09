@@ -41,10 +41,25 @@ public class BaseActivity extends AppCompatActivity implements View.OnClickListe
         locAdapter = new BaseActivity.LocAdapter();
         recyclerView.setAdapter(locAdapter);
 
-        locations = (List<String>)getLastCustomNonConfigurationInstance();
-        if(locations == null) {
-            locations = new ArrayList<String>();
+        if(getLastCustomNonConfigurationInstance() != null) {
+            locations = (List<String>)getLastCustomNonConfigurationInstance();
         }
+        else {
+            locations = new ArrayList<String>();
+            Thread t = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    List<Locations> locs = db.locationDao().getAll();
+                    if(locs != null && !locs.isEmpty()) {
+                        for(Locations lc: locs) {
+                            locations.add(lc.getLocation());
+                        }
+                    }
+                }
+            });
+            t.start();
+        }
+
     }
 
     private class LocAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -96,13 +111,22 @@ public class BaseActivity extends AppCompatActivity implements View.OnClickListe
         else {
             int pos = recyclerView.getChildLayoutPosition((LinearLayout)(v.getParent()));
             if(v instanceof Button) {
-                Toast.makeText(BaseActivity.this, "Button " + pos, Toast.LENGTH_SHORT).show();
+                final String s = locations.get(pos);
+                Thread t = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        LocationDao dao = db.locationDao();
+                        Locations location = dao.get(s).get(0);
+                        dao.delete(location);
+                    }
+                });
+                t.start();
                 locations.remove(pos);
                 locAdapter.notifyDataSetChanged();
 
             }
             else {
-                Toast.makeText(BaseActivity.this, "Field " + pos, Toast.LENGTH_SHORT).show();
+
                 String loc = ((TextView)v).getText().toString();
                 intent.putExtra("location", loc);
                 startActivityForResult(intent, 2);
