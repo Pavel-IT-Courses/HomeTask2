@@ -130,7 +130,7 @@ public class BaseActivity extends AppCompatActivity implements View.OnClickListe
                     dao.insert(newLocation);
                 }
             });
-            t.run();
+            t.start();
             locations.add(loc);
             locAdapter.notifyDataSetChanged();
         }

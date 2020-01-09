@@ -1,11 +1,10 @@
 package com.gmail.pavkascool.h7_weather;
 
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
-
 
 import java.util.LinkedHashMap;
 
+//Singleton to cash icons from OpenWeather
 
 public class IconHolder extends LinkedHashMap<String, Bitmap> {
     private final static int LENGTH = 16;
